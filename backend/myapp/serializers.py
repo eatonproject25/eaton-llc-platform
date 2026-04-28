@@ -22,6 +22,7 @@ from .models import (
     Ticket,
     TicketPhoto,
     DriverLocation,
+    Notification,
 )
 
 User = get_user_model()
@@ -452,5 +453,11 @@ class ResetPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField()
     code = serializers.RegexField(r"^\d{6}$")
     new_password = serializers.CharField(min_length=8, write_only=True)
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = ['id', 'title', 'body', 'data', 'is_read', 'sent_at']
+        read_only_fields = ['id', 'title', 'body', 'data', 'sent_at']
 
 

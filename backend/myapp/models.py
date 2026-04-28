@@ -198,7 +198,23 @@ class DeviceToken(models.Model):
 
     def __str__(self):
         return f"{self.user.username} ({self.platform})"
-        
+
+
+class Notification(models.Model):
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    title = models.CharField(max_length=255)
+    body = models.TextField()
+    data = models.JSONField(default=dict, blank=True)
+    is_read = models.BooleanField(default=False)
+    sent_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-sent_at']
+
+    def __str__(self):
+        return f"{self.recipient.username}: {self.title}"
+
+
 class Address(models.Model):
     street_address = models.CharField(max_length=255)
     country = models.CharField(max_length=100)

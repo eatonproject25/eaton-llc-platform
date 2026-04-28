@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, generics, permissions, status, serializers
 from rest_framework.decorators import api_view, action, permission_classes
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.exceptions import AuthenticationFailed, TokenError
 from django.db.models import Q, Prefetch
@@ -21,7 +21,7 @@ from .models import (
     Job, Customer, Driver, Role, UserRole, Comment, Truck, DriverTruckAssignment,
     Operator, Address, JobDriverAssignment, DeviceToken, Invoice, InvoiceLine,
     PayReport, PayReportLine, JOB_STATUS_CHOICES, ClockEntry, Ticket, TicketPhoto,
-    DriverLocation
+    DriverLocation, Notification
 )
 from .serializers import (
     JobSerializer, CustomerSerializer, DriverSerializer, RoleSerializer,
@@ -29,7 +29,8 @@ from .serializers import (
     DriverTruckAssignmentSerializer, OperatorSerializer, AddressSerializer,
     JobDriverAssignmentSerializer, DeviceTokenSerializer, InvoiceSerializer,
     InvoiceLineSerializer, PayReportSerializer, PayReportLineSerializer,
-    TicketSerializer, TicketPhotoSerializer, DriverLocationSerializer
+    TicketSerializer, TicketPhotoSerializer, DriverLocationSerializer,
+    NotificationSerializer
 )
 from .permissions import IsDriver, IsManager, IsManagerOrDriver
 from drf_spectacular.utils import extend_schema, OpenApiParameter, inline_serializer
@@ -42,7 +43,7 @@ User = get_user_model()
 def home(request):
     return HttpResponse("Hello, this is the home page!")
 
-def send_push_notification(expo_token, title, body, data=None):
+def send_push_notification(expo_token, title, body, data=None, recipient=None):
     url = "https://exp.host/--/api/v2/push/send"
 
     payload = {
@@ -60,10 +61,20 @@ def send_push_notification(expo_token, title, body, data=None):
     try:
         response = requests.post(url, json=payload, headers=headers)
         #print("Expo response:", response.json())
-        return response.json()
+        result = response.json()
     except Exception as e:
         print("Push notification error:", str(e))
-        return None
+        result = None
+
+    if recipient is not None:
+        Notification.objects.create(
+            recipient=recipient,
+            title=title,
+            body=body,
+            data=data or {},
+        )
+
+    return result
         
 # ViewSets for basic CRUD APIs
 class AddressViewSet(viewsets.ModelViewSet):
@@ -228,17 +239,17 @@ class JobDriverAssignmentViewSet(viewsets.ModelViewSet):
             job = assignment.job
 
             device_tokens = DeviceToken.objects.filter(user=user)
+            notification_saved = False
 
             for device in device_tokens:
                 send_push_notification(
                     expo_token=device.token,
                     title="New Job Assigned",
                     body=f"You have been assigned to Job {job.job_number}",
-                    data={
-                        "jobId": job.id,
-                        "jobNumber": job.job_number
-                    }
+                    data={"jobId": job.id, "jobNumber": job.job_number},
+                    recipient=user if not notification_saved else None,
                 )
+                notification_saved = True
 
         except Exception as e:
             print("Error sending push notification:", str(e))
@@ -993,3 +1004,12 @@ class AuthViewSet(viewsets.ViewSet):
             return Response({"detail": "Invalid or expired code."}, status=status.HTTP_400_BAD_REQUEST)
         user.set_password(new_pw); user.save(update_fields=["password"])
         return Response({"ok": True})
+
+
+class NotificationViewSet(viewsets.ModelViewSet):
+    serializer_class = NotificationSerializer
+    permission_classes = [IsAuthenticated]
+    http_method_names = ['get', 'patch']
+
+    def get_queryset(self):
+        return Notification.objects.filter(recipient=self.request.user)

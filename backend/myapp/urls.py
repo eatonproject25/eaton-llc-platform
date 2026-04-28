@@ -14,6 +14,7 @@ from .views import (
     CustomTokenRefreshView, protected_view, assign_truck_to_driver,
     unassigned_trucks, PayReportViewSet, PayReportLineViewSet,
     InvoiceViewSet, InvoiceLineViewSet, TicketViewSet,
+    NotificationViewSet,
 )
 
 router = DefaultRouter()
@@ -36,6 +37,7 @@ router.register(r'auth', AuthViewSet, basename='auth')
 router.register(r'invoices', InvoiceViewSet, basename='invoice')
 router.register(r'invoice-lines', InvoiceLineViewSet, basename='invoice-line')
 router.register(r'tickets', TicketViewSet, basename='ticket')
+router.register(r'notifications', NotificationViewSet, basename='notification')
 
 urlpatterns = [
     # Swagger / OpenAPI docs
