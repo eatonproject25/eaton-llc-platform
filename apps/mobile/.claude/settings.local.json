@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh run list:*)",
+      "Bash(winget install:*)",
+      "WebFetch(domain:expo.dev)",
+      "Bash(ls:*)",
+      "Bash(\"C:\\\\Program Files\\\\GitHub CLI\\\\gh.exe\" auth status)",
+      "Bash(powershell:*)"
+    ]
+  }
+}

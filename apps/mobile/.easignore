@@ -1,0 +1,10 @@
+# Ignore files not needed for EAS builds
+.git
+.github
+.vscode
+.expo
+docs
+prev-team
+*.md
+.env
+.env.*

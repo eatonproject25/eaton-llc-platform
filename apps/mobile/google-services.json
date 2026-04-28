@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "362175948575",
+    "project_id": "eaton-llc-mobile-app",
+    "storage_bucket": "eaton-llc-mobile-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:362175948575:android:a20ea43e8f2b868001722a",
+        "android_client_info": {
+          "package_name": "com.eatonllc.partnerapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBmED2n0eVdJt0O_excaUvf8BiOQgSGSGk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

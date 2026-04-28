@@ -1,0 +1,76 @@
+{
+  "expo": {
+    "name": "Eaton-LLC-MobileApp",
+    "slug": "Eaton-LLC-MobileApp",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "eatonllcmobileapp",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.eatonllc.partnerapp",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSLocationWhenInUseUsageDescription": "Your location is shared with dispatch while you are clocked in.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Your location is shared with dispatch while you are clocked in, including when the app is in the background."
+      }
+    },
+    "android": {
+      "package": "com.eatonllc.partnerapp",
+      "googleServicesFile": "./google-services.json",
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "WAKE_LOCK"
+      ]
+    },
+    "web": {
+      "output": "static"
+    },
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-notifications",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Your location is shared with dispatch while you are clocked in.",
+          "isAndroidBackgroundLocationEnabled": true
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ],
+      "expo-secure-store",
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera to take photos and videos.",
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos to upload images."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "1e9bc6a7-8cee-42e2-ad10-9721dd503c78"
+      }
+    },
+    "owner": "eaton26"
+  }
+}
