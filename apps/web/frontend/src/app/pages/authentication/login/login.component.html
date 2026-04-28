@@ -1,0 +1,28 @@
+<form [formGroup]="form" (ngSubmit)="submit()" class="login-form">
+<img src="assets/images/logo-thumb.png" alt="Trucking Team Logo" class="logo" />
+  <h1>Login</h1>
+
+  <label>
+    Username
+    <input formControlName="username" placeholder="Enter username" />
+  </label>
+  <div class="err" *ngIf="form.controls.username.touched && form.controls.username.invalid">
+    Username is required.
+  </div>
+
+  <label>
+    Password
+    <input type="password" formControlName="password" placeholder="Enter password" />
+  </label>
+  <div class="err" *ngIf="form.controls.password.touched && form.controls.password.invalid">
+    Password is required.
+  </div>
+  <div class="d-flex justify-content-end mt-3">
+    <a class="btn btn-link p-0" [routerLink]="['/auth/forgot-password']">Forgot password?</a>
+  </div>  
+  <button type="submit" [disabled]="loading || form.invalid">
+    {{ loading ? 'Signing in…' : 'Sign in' }}
+  </button>
+
+  <p class="err" *ngIf="error">{{ error }}</p>
+</form>

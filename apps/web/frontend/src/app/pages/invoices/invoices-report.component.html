@@ -1,0 +1,173 @@
+<!-- 
+  PAGE HEADER SECTION
+  Contains the page title and primary action buttons
+  Uses Bootstrap flexbox for responsive layout
+-->
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3>Invoices</h3>
+  <div class="d-flex gap-2">
+    <!-- 
+      BULK DELETE BUTTON
+      Only enabled when invoices are selected
+      Uses Material Icons for consistent iconography
+    -->
+    <button class="btn btn-outline-danger" 
+            [disabled]="selected.length === 0" 
+            (click)="deleteSelected()">
+      <i class="material-icons" style="font-size: 16px;">&#xE872;</i> Delete Selected
+    </button>
+    <!-- 
+      CREATE NEW INVOICE BUTTON
+      Opens the invoice creation dialog
+    -->
+    <button class="btn btn-primary" (click)="navigateToCreateInvoice()">New Invoice</button>
+  </div>
+</div>
+
+
+<!-- 
+  FILTER SECTION
+  Provides search and filter controls for the invoice list
+  Uses Bootstrap grid system for responsive layout
+-->
+<div class="mb-3 row g-2">
+  <!-- 
+    CUSTOMER FILTER
+    Text input for filtering by customer name
+    Uses two-way data binding with ngModel
+  -->
+  <div class="col-md-3">
+    <input class="form-control" placeholder="Customer..." [(ngModel)]="filters.customer" (ngModelChange)="applyFilters()">
+  </div>
+  <!-- 
+    PROJECT FILTER
+    Text input for filtering by project name
+    Triggers filter application on every keystroke
+  -->
+  <div class="col-md-3">
+    <input class="form-control" placeholder="Project..." [(ngModel)]="filters.project" (ngModelChange)="applyFilters()">
+  </div>
+  <!-- 
+    STATUS FILTER
+    Dropdown for filtering by invoice status
+    Includes all possible status values
+  -->
+  <div class="col-md-2">
+    <select class="form-select" [(ngModel)]="filters.status" (ngModelChange)="applyFilters()">
+      <option value="">Any status</option>
+      <option>Draft</option>
+      <option>Sent</option>
+      <option>Paid</option>
+      <option>Overdue</option>
+      <option>Void</option>
+    </select>
+  </div>
+  <div class="col-md-3">
+  <input class="form-control" type="date" [(ngModel)]="filters.date" (ngModelChange)="applyFilters()">
+</div>
+</div>
+
+<!-- 
+  INVOICE TABLE SECTION
+  Displays all invoices in a responsive table format
+  Uses custom card component for consistent styling
+-->
+<app-card cardTitle="Current Invoices" [options]="false" blockClass="table-border-style">
+  <div class="table-responsive">
+    <table class="table">
+      <!-- 
+        TABLE HEADER
+        Defines column headers for the invoice data
+        Includes checkbox column for bulk selection
+      -->
+      <thead>
+        <tr>
+          <th></th>  <!-- Checkbox column for selection -->
+          <th>INV #</th>
+          <th>Project</th>
+          <th>Customer</th>
+          <th>Invoice Date</th>
+          <th>Status</th>
+          <th class="text-end">Total</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <!-- 
+        TABLE BODY
+        Iterates through filtered invoices using Angular's *ngFor
+        Uses trackBy function for performance optimization
+      -->
+      <tbody>
+        <tr *ngFor="let inv of invoices; trackBy: trackById">
+          <!-- 
+            SELECTION CHECKBOX
+            Allows users to select invoices for bulk operations
+            Uses two-way data binding to track selection state
+          -->
+          <td><input type="checkbox" [(ngModel)]="inv.selected" (ngModelChange)="onSelect()"/></td>
+          
+          <!-- INVOICE DATA COLUMNS -->
+          <td>{{ inv.invoiceNo }}</td>           <!-- Invoice number -->
+          <td>{{ inv.projectName }}</td>         <!-- Project name -->
+          <td>{{ inv.customerName }}</td>        <!-- Customer name -->
+          <td>{{ inv.invoiceDate }}</td>         <!-- Invoice date -->
+          
+          <!-- 
+            STATUS DROPDOWN
+            Editable status selector with custom styling
+            Triggers status update on change
+          -->
+          <td>
+            <select class="form-select form-select-sm status-select" 
+                    [(ngModel)]="inv.status" 
+                    (change)="updateStatus(inv.id, inv.status)"
+                    [ngClass]="'status-' + (inv.status | lowercase)"
+                    style="border: 1px solid #333 !important; background: white !important; padding: 4px 25px 4px 8px !important; font-size: 0.875rem !important; min-width: 100px !important; appearance: none !important; background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 4 5\'><path fill=\'%23333\' d=\'M2 0L0 2h4zm0 5L0 3h4z\'/></svg>') !important; background-repeat: no-repeat !important; background-position: right 8px center !important; background-size: 12px !important;">
+              <option value="Draft">Draft</option>
+              <option value="Sent">Sent</option>
+              <option value="Paid">Paid</option>
+              <option value="Overdue">Overdue</option>
+              <option value="Void">Void</option>
+            </select>
+          </td>
+          
+          <!-- TOTAL AMOUNT -->
+          <td class="text-end"><strong>{{ inv.totalAmount | currency }}</strong></td>
+          
+          <!-- 
+            ACTION BUTTONS
+            Provides view, edit, and delete actions for each invoice
+            Uses Material Icons for consistent iconography
+          -->
+          <td>
+            <div class="action-buttons-row">
+              <!-- VIEW BUTTON - Blue eye icon -->
+              <a href="#" class="view" title="View" (click)="open(inv.id); $event.preventDefault()" data-toggle="tooltip">
+                <i class="material-icons">&#xE417;</i>
+              </a>
+              <!-- EDIT BUTTON - Yellow pencil icon -->
+              <a href="#" class="edit" title="Edit" (click)="edit(inv.id); $event.preventDefault()" data-toggle="tooltip">
+                <i class="material-icons">&#xE254;</i>
+              </a>
+              <!-- DELETE BUTTON - Red trash icon -->
+              <a href="#" class="delete" title="Delete" (click)="delete(inv.id); $event.preventDefault()" data-toggle="tooltip">
+                <i class="material-icons">&#xE872;</i>
+              </a>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="!invoices?.length">
+          <td colspan="8" class="text-center text-muted py-4">No invoices yet.</td>
+        </tr>
+      </tbody>
+    </table>
+    <app-new-invoice-dialog
+      *ngIf="showNewModal"
+      [customers]="customers"
+      [jobs]="jobs"
+      (cancel)="onCloseNew()"
+      (save)="onSaveNew($event)"
+      (customerChange)="onCustomerChangeInDialog($event)">
+    </app-new-invoice-dialog>
+  </div>
+</app-card>

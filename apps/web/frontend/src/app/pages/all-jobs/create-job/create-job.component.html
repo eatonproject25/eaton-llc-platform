@@ -1,0 +1,498 @@
+<div class="container">
+  <h2>Job Creator</h2>
+
+  <form [formGroup]="jobForm">
+    <!-- CRITICAL CHANGE: Keep [linear]="true" and add [stepControl] to each step -->
+    <ng-stepper #cdkStepper [linear]="true" class="custom-stepper">
+
+      <!-- Step 1: Project Details - ADD [stepControl]="step1FormGroup" -->
+      <cdk-step [stepControl]="step1FormGroup">
+        <ng-template cdkStepLabel>
+          <div class="step-bullet">1</div>
+          <div class="step-title">Project Details</div>
+        </ng-template>
+
+        <div class="form-content">
+
+          <div class="form-group">
+            <label>Project Name <span style="color:red">*</span></label>
+            <input type="text" formControlName="project" class="form-control">
+            <div class="text-danger" *ngIf="jobForm.get('project')?.touched && jobForm.get('project')?.hasError('required')">
+              Project Name is required.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Prime Contractor <span style="color:red">*</span></label>
+            <input type="text" 
+                   formControlName="primeContractor" 
+                   class="form-control" 
+                   autocomplete="off"
+                   (focus)="onPrimeContractorFocus()"
+                   (blur)="onPrimeContractorBlur()">
+            <div *ngIf="filteredPrimeContractors.length > 0" class="dropdown-list">
+              <div *ngFor="let contractor of filteredPrimeContractors" 
+                   class="dropdown-item" 
+                   (click)="selectPrimeContractor(contractor)">
+                {{ contractor }}
+              </div>
+            </div>
+            <div class="text-danger" *ngIf="jobForm.get('primeContractor')?.touched && jobForm.get('primeContractor')?.hasError('required')">
+              Prime Contractor is required.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Prime Contractor Project Number <span style="color:red">*</span></label>
+            <input type="text" formControlName="primeContractorProjectNumber" class="form-control">
+            <div class="text-danger" *ngIf="jobForm.get('primeContractorProjectNumber')?.touched && jobForm.get('primeContractorProjectNumber')?.hasError('required')">
+              Prime Contractor Project Number is required.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Invoiced Contractor <span style="color:red">*</span></label>
+            <input type="text" 
+                   formControlName="contractorInvoice" 
+                   class="form-control" 
+                   autocomplete="off"
+                   (focus)="onInvoicedContractorFocus()"
+                   (blur)="onInvoicedContractorBlur()">
+            <div *ngIf="filteredInvoicedContractors.length > 0" class="dropdown-list">
+              <div *ngFor="let contractor of filteredInvoicedContractors" 
+                   class="dropdown-item" 
+                   (click)="selectInvoicedContractor(contractor)">
+                {{ contractor }}
+              </div>
+            </div>
+            <div class="text-danger" *ngIf="jobForm.get('contractorInvoice')?.touched && jobForm.get('contractorInvoice')?.hasError('required')">
+              Invoiced Contractor is required.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Invoiced Contractor Project Number <span style="color:red">*</span></label>
+            <input type="text" formControlName="contractorInvoiceProjectNumber" class="form-control">
+            <div class="text-danger" *ngIf="jobForm.get('contractorInvoiceProjectNumber')?.touched && jobForm.get('contractorInvoiceProjectNumber')?.hasError('required')">
+              Invoiced Contractor Project Number is required.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Prevailing or Non Prevailing <span style="color:red">*</span></label>
+            <select formControlName="prevailingOrNot" class="form-control">
+              <option value="">Select</option>
+              <option value="prevailing">Prevailing</option>
+              <option value="nonPrevailing">Non Prevailing</option>
+            </select>
+            <div class="text-danger" *ngIf="jobForm.get('prevailingOrNot')?.touched && jobForm.get('prevailingOrNot')?.hasError('required')">
+              Prevailing or Non Prevailing is required.
+            </div>
+          </div>
+
+          <div *ngIf="isPrevailing">
+            <div class="form-group">
+              <label>Prevailing Type <span style="color:red">*</span></label>
+              <select formControlName="prevailingType" class="form-control">
+                <option value="">Select</option>
+                <option *ngFor="let option of prevailingOptions" [value]="option">{{ option }}</option>
+              </select>
+              <div class="text-danger" *ngIf="jobForm.get('prevailingType')?.touched && jobForm.get('prevailingType')?.hasError('required')">
+                Prevailing Type is required.
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="jobForm.get('prevailingOrNot')?.value === 'nonPrevailing'">
+            <div class="form-group">
+              <label>SAP or SP Number</label>
+              <input type="text" formControlName="sapOrSpNumber" class="form-control">
+            </div>
+          </div>
+
+          <div *ngIf="isPrevailing && isAASHTOWare">
+            <div class="form-group">
+              <label>Reporting Requirement</label>
+              <input type="text" formControlName="reportRequirement" class="form-control">
+            </div>
+
+            <div class="form-group">
+              <label>Contract Number</label>
+              <input type="text" formControlName="contractNumber" class="form-control">
+            </div>
+          </div>
+
+          <div *ngIf="isPrevailing">
+            <div class="form-group">
+              <label>Project ID Number</label>
+              <input type="text" formControlName="projectId" class="form-control">
+            </div>
+
+            <div class="mt-3">
+              <h5>Prevailing Wage Class Codes</h5>
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Class Code</th>
+                    <th>Base Rate</th>
+                    <th>Fringe Rate</th>
+                    <th>Total Standard Time Rate</th>
+                    <th>Total Overtime Rate</th>
+                  </tr>
+                </thead>
+                <tbody formArrayName="classCodes">
+                  <tr *ngFor="let code of classCodes.controls; let i = index" [formGroupName]="i">
+                    <td><input class="form-control" formControlName="laborCode" readonly></td>
+                    <td><input class="form-control" formControlName="baseRate"></td>
+                    <td><input class="form-control" formControlName="fringeRate"></td>
+                    <td><input class="form-control" formControlName="totalStandardTimeRate"></td>
+                    <td><input class="form-control" formControlName="totalOverTimeRate"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="stepper-buttons">
+          <button type="button" (click)="nextStep(cdkStepper)" class="btn btn-primary">Next</button>
+        </div>
+      </cdk-step>
+
+      <!-- Step 2: Job Rate & Material - ADD [stepControl]="step2FormGroup" -->
+      <cdk-step [stepControl]="step2FormGroup">
+        <ng-template cdkStepLabel>
+          <div class="step-bullet">2</div>
+          <div class="step-title">Job Rate & Material</div>
+        </ng-template>
+
+        <div class="form-content">
+          <div class="form-group">
+            <label>Job Description <span style="color:red">*</span></label>
+            <input type="text" formControlName="jobDescription" class="form-control">
+            <div class="text-danger" *ngIf="jobForm.get('jobDescription')?.touched && jobForm.get('jobDescription')?.hasError('required')">
+              Job Description is required.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Job Number <span style="color:red">*</span></label>
+            <input type="text" formControlName="jobNumber" class="form-control">
+            <div class="text-danger" *ngIf="jobForm.get('jobNumber')?.touched && jobForm.get('jobNumber')?.hasError('required')">
+              Job Number is required.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Material <span style="color:red">*</span></label>
+            <input type="text" formControlName="material" class="form-control">
+            <div class="text-danger" *ngIf="jobForm.get('material')?.touched && jobForm.get('material')?.hasError('required')">
+              Material is required.
+            </div>
+          </div>
+        </div>
+
+        <div class="stepper-buttons">
+          <button type="button" cdkStepperPrevious class="btn btn-secondary">Previous</button>
+          <button type="button" (click)="nextStep(cdkStepper)" class="btn btn-primary">Next</button>
+        </div>
+      </cdk-step>
+
+      <!-- Step 3: Loading & Unloading - ADD [stepControl]="step3FormGroup" -->
+      <cdk-step [stepControl]="step3FormGroup">
+        <ng-template cdkStepLabel>
+          <div class="step-bullet">3</div>
+          <div class="step-title">Loading & Unloading</div>
+        </ng-template>
+
+        <div class="form-content">
+          
+          <!-- Loading Address Section -->
+          <div class="form-group">
+            <label>Loading Address</label>
+            <select formControlName="loadingAddress" class="form-control">
+              <option value="">Select a loading address</option>
+              <option *ngFor="let addr of addressOptions.loading" [value]="addr.id">
+                {{ addr.street_address }}, {{ addr.city }}, {{ addr.state }}
+              </option>
+            </select>
+            <button type="button" class="btn btn-sm btn-primary add-new-address-btn" (click)="showNewAddress.loading = !showNewAddress.loading">
+              {{ showNewAddress.loading ? 'Cancel' : 'Add a New Address' }}
+            </button>
+          </div>
+
+          <div *ngIf="showNewAddress.loading" class="mt-2">
+            <input type="text" formControlName="newLoadingAddress" placeholder="Enter new loading address" class="form-control mb-2">
+            
+            <label>State</label>
+            <select formControlName="loadingState" class="form-control mb-2">
+              <option value="">Select a state</option>
+              <option *ngFor="let state of states" [value]="state">{{ state }}</option>
+            </select>
+
+            <label>City</label>
+            <input type="text" formControlName="loadingCity" placeholder="Enter city" class="form-control mb-2">
+
+            <label>Zip Code</label>
+            <input type="text" formControlName="loadingZipCode" placeholder="Enter zip code" class="form-control mb-2">
+
+            <label>Location Name</label>
+            <input type="text" formControlName="loadingLocationName" placeholder="Enter location name" class="form-control mb-2">
+
+            <label>Latitude</label>
+            <input type="text" formControlName="loadingLatitude" placeholder="Enter latitude" class="form-control mb-2">
+
+            <label>Longitude</label>
+            <input type="text" formControlName="loadingLongitude" placeholder="Enter longitude" class="form-control mb-2">
+
+            <label>Location Type</label>
+            <select formControlName="loadingLocationType" class="form-control mb-2">
+              <option value="" disabled selected hidden>Select a location type</option>
+              <option *ngFor="let type of locationTypes" [value]="type">{{ type }}</option>
+            </select>
+
+            <button type="button" class="btn btn-sm btn-primary w-100" (click)="addLoadingAddress()">
+              Add
+            </button>
+          </div>
+
+          <!-- Loading Options -->
+          <div class="form-group">
+            <label class="section-title">Loading Options</label>
+            <div class="option-row" *ngFor="let option of loadingOptions">
+              <span class="option-label">{{ option.label }}</span>
+              <select class="option-select" [formControlName]="option.controlName">
+                <option value="">Optional</option>
+                <option value="required">Required</option>
+                <option value="hidden">Hidden</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Spacing between Loading and Unloading -->
+          <br><br>
+
+          <!-- Unloading Address Section -->
+          <div class="form-group">
+            <label>Unloading Address</label>
+            <select formControlName="unloadingAddress" class="form-control">
+              <option value="">Select an unloading address</option>
+              <option *ngFor="let addr of addressOptions.unloading" [value]="addr.id">
+                {{ addr.street_address }}, {{ addr.city }}, {{ addr.state }}
+              </option>
+            </select>
+            <button type="button" class="btn btn-sm btn-primary add-new-address-btn" (click)="showNewAddress.unloading = !showNewAddress.unloading">
+              {{ showNewAddress.unloading ? 'Cancel' : 'Add a New Address' }}
+            </button>
+          </div>
+
+          <div *ngIf="showNewAddress.unloading" class="mt-2">
+            <input type="text" formControlName="newUnloadingAddress" placeholder="Enter new unloading address" class="form-control mb-2">
+
+            <label>State</label>
+            <select formControlName="unloadingState" class="form-control mb-2">
+              <option value="" disabled selected hidden>Select a state</option>
+              <option *ngFor="let state of states" [value]="state">{{ state }}</option>
+            </select>
+
+            <label>City</label>
+            <input type="text" formControlName="unloadingCity" placeholder="Enter city" class="form-control mb-2">
+
+            <label>Zip Code</label>
+            <input type="text" formControlName="unloadingZipCode" placeholder="Enter zip code" class="form-control mb-2">
+
+            <label>Location Name</label>
+            <input type="text" formControlName="unloadingLocationName" placeholder="Enter location name" class="form-control mb-2">
+
+            <label>Latitude</label>
+            <input type="text" formControlName="unloadingLatitude" placeholder="Enter latitude" class="form-control mb-2">
+
+            <label>Longitude</label>
+            <input type="text" formControlName="unloadingLongitude" placeholder="Enter longitude" class="form-control mb-2">
+
+            <label>Location Type</label>
+            <select formControlName="unloadingLocationType" class="form-control mb-2">
+              <option value="" disabled selected hidden>Select a location type</option>
+              <option *ngFor="let type of locationTypes" [value]="type">{{ type }}</option>
+            </select>
+
+            <button type="button" class="btn btn-sm btn-primary w-100" (click)="addUnloadingAddress()">
+              Add
+            </button>
+          </div>
+
+          <!-- Unloading Options -->
+          <div class="form-group">
+            <label class="section-title">Unloading Options</label>
+            <div class="option-row" *ngFor="let option of unloadingOptions">
+              <span class="option-label">{{ option.label }}</span>
+              <select class="option-select" [formControlName]="option.controlName">
+                <option value="">Optional</option>
+                <option value="required">Required</option>
+                <option value="hidden">Hidden</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Backhaul Checkbox -->
+          <div class="form-content form-check">
+            <input class="form-check-input" type="checkbox" id="backhaul" formControlName="isBackhaulEnabled">
+            <label class="form-check-label" for="backhaul">
+              Backhaul
+            </label>
+          </div>
+
+          <!-- Backhaul Loading Section -->
+          <div *ngIf="isBackhaulEnabled" class="section">
+            <label class="section-title">Backhaul Loading Address</label>
+
+            <select formControlName="backhaulLoadingAddress" class="form-control">
+              <option value="">Select backhaul loading address</option>
+              <option *ngFor="let addr of addressOptions.backhaulLoading" [value]="addr.id">
+                {{ addr.street_address }}, {{ addr.city }}, {{ addr.state }}
+              </option>
+            </select>
+
+            <button type="button" class="btn btn-sm btn-primary add-new-address-btn" (click)="showNewAddress.backhaulLoading = !showNewAddress.backhaulLoading">
+              {{ showNewAddress.backhaulLoading ? 'Cancel' : 'Add New Backhaul Loading Address' }}
+            </button>
+
+            <div *ngIf="showNewAddress.backhaulLoading" class="mt-2">
+              <input type="text" formControlName="newBackhaulLoadingAddress" placeholder="Street Address" class="form-control mb-2">
+
+              <label>State</label>
+              <select formControlName="backhaulLoadingState" class="form-control mb-2">
+                <option value="" disabled selected hidden>Select a state</option>
+                <option *ngFor="let state of states" [value]="state">{{ state }}</option>
+              </select>
+
+              <label>City</label>
+              <input type="text" formControlName="backhaulLoadingCity" placeholder="City" class="form-control mb-2">
+
+              <label>Zip Code</label>
+              <input type="text" formControlName="backhaulLoadingZipCode" placeholder="Zip Code" class="form-control mb-2">
+
+              <label>Location Name</label>
+              <input type="text" formControlName="backhaulLoadingLocationName" placeholder="Location Name" class="form-control mb-2">
+
+              <label>Latitude</label>
+              <input type="text" formControlName="backhaulLoadingLatitude" placeholder="Latitude" class="form-control mb-2">
+
+              <label>Longitude</label>
+              <input type="text" formControlName="backhaulLoadingLongitude" placeholder="Longitude" class="form-control mb-2">
+
+              <label>Location Type</label>
+              <select formControlName="backhaulLoadingLocationType" class="form-control mb-2">
+                <option value="" disabled selected hidden>Select a location type</option>
+                <option *ngFor="let type of locationTypes" [value]="type">{{ type }}</option>
+              </select>
+
+              <button type="button" class="btn btn-sm btn-primary w-100" (click)="addBackhaulLoadingAddress()">
+                Add
+              </button>
+            </div>
+          </div>
+
+          <!-- Backhaul Unloading Section -->
+          <div *ngIf="isBackhaulEnabled" class="section">
+            <label class="section-title">Backhaul Unloading Address</label>
+
+            <select formControlName="backhaulUnloadingAddress" class="form-control">
+              <option value="">Select backhaul unloading address</option>
+              <option *ngFor="let addr of addressOptions.backhaulUnloading" [value]="addr.id">
+                {{ addr.street_address }}, {{ addr.city }}, {{ addr.state }}
+              </option>
+            </select>
+
+            <button type="button" class="btn btn-sm btn-primary add-new-address-btn" (click)="showNewAddress.backhaulUnloading = !showNewAddress.backhaulUnloading">
+              {{ showNewAddress.backhaulUnloading ? 'Cancel' : 'Add New Backhaul Unloading Address' }}
+            </button>
+
+            <div *ngIf="showNewAddress.backhaulUnloading" class="mt-2">
+              <input type="text" formControlName="newBackhaulUnloadingAddress" placeholder="Street Address" class="form-control mb-2">
+
+              <label>State</label>
+              <select formControlName="backhaulUnloadingState" class="form-control mb-2">
+                <option value="" disabled selected hidden>Select a state</option>
+                <option *ngFor="let state of states" [value]="state">{{ state }}</option>
+              </select>
+
+              <label>City</label>
+              <input type="text" formControlName="backhaulUnloadingCity" placeholder="City" class="form-control mb-2">
+
+              <label>Zip Code</label>
+              <input type="text" formControlName="backhaulUnloadingZipCode" placeholder="Zip Code" class="form-control mb-2">
+
+              <label>Location Name</label>
+              <input type="text" formControlName="backhaulUnloadingLocationName" placeholder="Location Name" class="form-control mb-2">
+
+              <label>Latitude</label>
+              <input type="text" formControlName="backhaulUnloadingLatitude" placeholder="Latitude" class="form-control mb-2">
+
+              <label>Longitude</label>
+              <input type="text" formControlName="backhaulUnloadingLongitude" placeholder="Longitude" class="form-control mb-2">
+
+              <label>Location Type</label>
+              <select formControlName="backhaulUnloadingLocationType" class="form-control mb-2">
+                <option value="" disabled selected hidden>Select a location type</option>
+                <option *ngFor="let type of locationTypes" [value]="type">{{ type }}</option>
+              </select>
+
+              <button type="button" class="btn btn-sm btn-primary w-100" (click)="addBackhaulUnloadingAddress()">
+                Add
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Job Date</label>
+            <input type="date" formControlName="jobDate" class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label>Job Start Time</label>
+            <input type="time" formControlName="jobStartTime" class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label>Job Foreman Name</label>
+            <input type="text" formControlName="jobForemanName" class="form-control" placeholder="Enter Job Foreman Name">
+          </div>
+
+          <div class="form-group">
+            <label>Job Foreman Contact</label>
+            <input type="text" formControlName="jobForemanContact" class="form-control" placeholder="Enter Job Foreman Contact Number">
+          </div>
+
+        </div>
+
+        <div class="stepper-buttons">
+          <button type="button" cdkStepperPrevious class="btn btn-secondary">← Previous</button>
+          <button type="button" (click)="nextStep(cdkStepper)" class="btn btn-primary">Next →</button>
+        </div>
+      </cdk-step>
+
+      <!-- Step 4: Additional Notes - ADD [stepControl]="step4FormGroup" -->
+      <cdk-step [stepControl]="step4FormGroup">
+        <ng-template cdkStepLabel>
+          <div class="step-bullet">4</div>
+          <div class="step-title">Additional Notes</div>
+        </ng-template>
+
+        <div class="form-content">
+          <div class="form-group">
+            <label>Additional Notes</label>
+            <textarea formControlName="additionalNotes" class="form-control" rows="4"></textarea>
+          </div>
+        </div>
+
+        <div class="stepper-buttons">
+          <button type="button" cdkStepperPrevious class="btn btn-secondary">Previous</button>
+          <button type="button" class="btn btn-success" (click)="submitJob()">Submit Job</button>
+        </div>
+      </cdk-step>
+
+    </ng-stepper>
+  </form>
+</div>

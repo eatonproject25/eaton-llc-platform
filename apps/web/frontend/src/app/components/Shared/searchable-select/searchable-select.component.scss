@@ -1,0 +1,13 @@
+.ss { position: relative; }
+.ss-control { position: relative; }
+.ss-input { padding-right: 2rem; cursor: text; }
+.ss-caret { position: absolute; right: .6rem; top: 50%; transform: translateY(-50%); opacity: .6; pointer-events: none; }
+.ss-panel {
+  position: absolute; z-index: 2000; width: 100%; margin-top: .25rem;
+  background: #fff; border: 1px solid #e5e7eb; border-radius: .5rem;
+  box-shadow: 0 14px 40px rgba(0,0,0,.15);
+  max-height: 260px; overflow: auto;
+}
+.ss-option { padding: .55rem .75rem; cursor: pointer; }
+.ss-option:hover, .ss-option.active { background: #f3f4f6; }
+.ss-empty { padding: .75rem; color: #6b7280; }

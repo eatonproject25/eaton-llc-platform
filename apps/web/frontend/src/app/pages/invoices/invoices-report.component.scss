@@ -1,0 +1,97 @@
+// Row Action Buttons - Match the source code styling exactly
+.action-buttons-row {
+  white-space: nowrap;
+  
+  a {
+    color: #a0a5b1;
+    display: inline-block;
+    margin: 0 5px;
+    text-decoration: none;
+    
+    &.view {
+      color: #03A9F4;
+    }
+    
+    &.edit {
+      color: #FFC107;
+    }
+    
+    &.delete {
+      color: #E34724;
+    }
+    
+    i {
+      font-size: 19px;
+    }
+    
+    &:hover {
+      text-decoration: none;
+    }
+  }
+}
+
+// Fix column spacing - make Actions column wider and add distance from Total
+.table td:last-child {
+  width: 130px !important;
+  min-width: 130px !important;
+}
+
+// Add distance between Total and Actions columns (both headers and data)
+.table td:nth-last-child(2),
+.table th:nth-last-child(2) {
+  padding-right: 30px !important;
+}
+
+.table td:last-child,
+.table th:last-child {
+  padding-left: 20px !important;
+}
+
+// Status Select Styling - now using inline styles
+.status-select {
+  &:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
+    border-color: #007bff !important;
+  }
+}
+
+// Status color classes for the select
+.status-draft {
+  color: #6c757d;
+}
+
+.status-sent {
+  color: #007bff;
+}
+
+.status-paid {
+  color: #28a745;
+}
+
+.status-overdue {
+  color: #dc3545;
+}
+
+.status-void {
+  color: #6f42c1;
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .action-buttons-row {
+    gap: 4px;
+    
+    a {
+      margin: 0 2px;
+      
+      i {
+        font-size: 16px;
+      }
+    }
+  }
+  
+  .btn-sm {
+    padding: 4px 8px !important;
+    font-size: 0.75rem !important;
+  }
+}

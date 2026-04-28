@@ -1,0 +1,79 @@
+<ul class="navbar-nav">
+  <li>
+    <div class="dropdown" ngbDropdown placement="auto">
+      <a ngbDropdownToggle href="javascript:" data-toggle="dropdown"><i class="icon feather icon-bell"></i></a>
+      <div ngbDropdownMenu class="dropdown-menu dropdown-menu-end notification">
+        <div class="notification-head">
+          <h6 class="d-inline-block m-b-0">Notifications</h6>
+          <div class="float-end">
+            <a href="javascript:" class="m-r-10 text-decoration-none" (click)="clearNotifications()">clear all</a>
+          </div>
+        </div>
+        <ul class="notification-body">
+          <li class="n-title" *ngIf="(notifications$ | async)?.length === 0">
+            <p class="m-b-0 text-muted">No notifications yet.</p>
+          </li>
+          <li class="notification" *ngFor="let n of (notifications$ | async)">
+            <div class="d-flex">
+              <div class="flex-grow-1">
+                <p class="mb-1">
+                  <strong>{{ n.kind | uppercase }}</strong>
+                  <span class="n-time text-muted">
+                    <i class="icon feather icon-clock m-r-10"></i>
+                    {{ n.at | date:'shortTime' }}
+                  </span>
+                </p>
+                <p class="mb-0">{{ n.message }}</p>
+              </div>
+              <button type="button" class="btn btn-sm btn-link text-danger" (click)="removeNotification(n.id)">
+                <i class="feather icon-x"></i>
+              </button>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </li>
+  <li>
+    <div class="dropdown drp-user" ngbDropdown placement="auto">
+      <a href="javascript:" ngbDropdownToggle data-toggle="dropdown">
+        <i class="icon feather icon-settings"></i>
+      </a>
+      <div class="dropdown-menu dropdown-menu-end profile-notification" ngbDropdownMenu>
+        <div class="pro-head">
+          <img src="assets/images/user/avatar-1.jpg" class="img-radius" alt="User-Profile-Image" />
+          <span>{{ username }}</span>
+          <button type="button" class="dud-logout" title="Logout" (click)="logout()">
+            <i class="feather icon-log-out"></i>
+          </button>
+        </div>
+        <ul class="pro-body">
+          <li>
+            <a href="javascript:" class="dropdown-item">
+              <i class="feather icon-settings"></i>
+              Settings
+            </a>
+          </li>
+          <li>
+            <a href="javascript:" class="dropdown-item">
+              <i class="feather icon-user"></i>
+              Profile
+            </a>
+          </li>
+          <li>
+            <a href="javascript:" class="dropdown-item">
+              <i class="feather icon-mail"></i>
+              My Messages
+            </a>
+          </li>
+          <li>
+            <a href="javascript:" class="dropdown-item">
+              <i class="feather icon-lock"></i>
+              Lock Screen
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </li>
+</ul>

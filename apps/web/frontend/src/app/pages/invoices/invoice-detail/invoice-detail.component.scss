@@ -1,0 +1,246 @@
+.invoice-detail-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+// Invoice styling to match PDF layout
+.invoice-detail-container {
+  font-family: 'Arial', sans-serif;
+  line-height: 1.4;
+
+  // Remove all spacing between cards - aggressive approach
+  app-card {
+    display: block !important;
+    margin: 0 !important;
+    margin-bottom: 0 !important;
+    padding: 0 !important;
+    
+    > * {
+      margin-bottom: 0 !important;
+    }
+
+    .card {
+      margin: 0 !important;
+      margin-bottom: 0 !important;
+    }
+
+    // Target the card body specifically
+    .card-body {
+      margin: 0 !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+    }
+
+    // Target the card header specifically
+    .card-header {
+      margin: 0 !important;
+      margin-bottom: 0 !important;
+      border-bottom: 1px solid #dee2e6 !important;
+    }
+
+    // Remove any default card spacing
+    .card-title {
+      margin-bottom: 0 !important;
+    }
+  }
+
+  // Remove border-radius for middle cards to join them seamlessly
+  app-card:not(:first-of-type):not(:last-of-type) {
+    .card {
+      border-radius: 0 !important;
+      border-top: none !important;
+    }
+  }
+
+  // Only top card has top border radius
+  app-card:first-of-type {
+    .card {
+      border-radius: 0.25rem 0.25rem 0 0 !important;
+      margin-bottom: 0 !important;
+    }
+  }
+
+  // Only bottom card has bottom border radius
+  app-card:last-of-type {
+    .card {
+      border-radius: 0 0 0.25rem 0.25rem !important;
+      border-top: none !important;
+      margin-top: 0 !important;
+    }
+  }
+
+  // Force middle card to have no margins
+  app-card:nth-of-type(2) {
+    margin: 0 !important;
+    padding: 0 !important;
+    
+    .card {
+      margin: 0 !important;
+      border-top: none !important;
+      border-radius: 0 !important;
+    }
+
+    .card-header {
+      border-top: none !important;
+      margin-top: 0 !important;
+      padding-top: 1rem !important;
+    }
+  }
+
+  // Force last card to have no top margin
+  app-card:last-of-type {
+    .card-header {
+      border-top: none !important;
+      margin-top: 0 !important;
+      padding-top: 1rem !important;
+    }
+  }
+
+  // Ensure no gaps between any card elements
+  app-card + app-card {
+    margin-top: 0 !important;
+    
+    .card {
+      margin-top: 0 !important;
+      border-top: none !important;
+    }
+  }
+}
+
+// Improved header styling - easier on the eyes
+.invoice-detail-container h2 {
+  color: #2c3e50;
+  font-weight: 500;
+  font-size: 1.5rem;
+}
+
+.invoice-detail-container h3 {
+  color: #34495e;
+  font-weight: 500;
+  font-size: 1.4rem;
+}
+
+.invoice-detail-container h5 {
+  color: #2c3e50;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.invoice-detail-container h6 {
+  color: #34495e;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+// Table styling to match invoice layout
+.table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  border: 1px solid #dee2e6;
+  padding: 12px 8px;
+  text-align: left;
+}
+
+.table td {
+  border: 1px solid #dee2e6;
+  padding: 8px;
+  vertical-align: middle;
+}
+
+.table-bordered th,
+.table-bordered td {
+  border: 1px solid #dee2e6;
+}
+
+// Edit mode styling
+.table-warning td {
+  background-color: #fff3cd;
+}
+
+// Button styling
+.btn-group .btn {
+  margin-right: 2px;
+}
+
+.btn-group .btn:last-child {
+  margin-right: 0;
+}
+
+// Badge styling
+.badge {
+  font-size: 0.875rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.badge-draft {
+  background-color: #6c757d;
+}
+
+.badge-sent {
+  background-color: #0d6efd;
+}
+
+.badge-paid {
+  background-color: #198754;
+}
+
+.badge-overdue {
+  background-color: #dc3545;
+}
+
+.badge-void {
+  background-color: #6f42c1;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .invoice-detail-container {
+    padding: 10px;
+  }
+  
+  .d-flex.gap-2 {
+    flex-direction: column;
+    gap: 0.5rem !important;
+  }
+  
+  .table-responsive {
+    font-size: 0.875rem;
+  }
+  
+  .btn-group {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .btn-group .btn {
+    margin-bottom: 2px;
+  }
+}
+
+// Print styles
+@media print {
+  .invoice-detail-container {
+    padding: 0;
+  }
+  
+  .btn, .d-flex.gap-2 {
+    display: none !important;
+  }
+  
+  .table {
+    font-size: 12px;
+  }
+  
+  .table th,
+  .table td {
+    padding: 4px 6px;
+  }
+}

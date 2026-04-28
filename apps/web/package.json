@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "@angular/forms": "^19.2.8",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^3.0.3",
+    "leaflet": "^1.9.4",
+    "ngx-daterangepicker-material": "^6.0.4",
+    "ngx-leaflet": "^0.0.16"
+  }
+}

@@ -1,0 +1,26 @@
+<div class="ss">
+  <div class="ss-control" (click)="toggle(true)">
+    <input
+      class="form-control ss-input"
+      [placeholder]="selectedLabel || placeholder"
+      [(ngModel)]="query"
+      (keydown)="onKeyDown($event)"
+      (focus)="toggle(true)"
+    />
+    <span class="ss-caret">▾</span>
+  </div>
+
+  <div class="ss-panel" *ngIf="open">
+    <div
+      class="ss-option"
+      *ngFor="let item of filtered; let i = index"
+      [class.active]="i === activeIndex"
+      (mouseenter)="activeIndex = i"
+      (mousedown)="$event.preventDefault()"
+      (click)="pick(item)"
+    >
+      {{ labelFn(item) }}
+    </div>
+    <div class="ss-empty" *ngIf="!filtered.length">No results</div>
+  </div>
+</div>

@@ -1,0 +1,291 @@
+
+  <h1 class="title">Add a Driver
+    <button (click)="closepopup()" class="close-button">x</button>
+  </h1>
+
+<form (ngSubmit) = "submitForm()" class="add-driver-form">
+  
+    <div class="form-row">
+      <div class="form-group">
+        <label for="fname">First Name</label>
+        <input type="text" 
+               id="fname" 
+               name="fname" 
+               placeholder="First Name"
+               [(ngModel)]="selectedFirstname" 
+               required>
+      </div>
+      
+      <div class="form-group">
+        <label for="lname">Last Name</label>
+        <input type="text" 
+               id="lname" 
+               name="lname" 
+               placeholder="Last Name"
+               [(ngModel)]="selectedLastname"
+               required>
+      </div>
+    </div>
+  
+    <div class="form-row">
+      <div class="form-group">
+        <label for="cdl">CDL Number</label>
+        <input type="text" 
+               id="cdl" 
+               name="cdl" 
+               placeholder="CDL"
+               [(ngModel)]="selectedCDL"
+               required>
+      </div>
+      
+      <div class="form-group">
+        <label for="billingID">Billing ID</label>
+        <input type="text" 
+               id="billingID" 
+               name="billingID"
+               placeholder="Billing ID"
+               [(ngModel)]="selectedBilling_id"
+               required>
+      </div>
+    </div>
+  
+    <div class="form-row">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" 
+               id="username" 
+               name="username" 
+               placeholder="Username"
+               [(ngModel)]="selectedUsername"
+               required>
+      </div>
+      
+      <div class="form-group">
+        <label for="pwd">Password</label>
+        <input type="password" 
+               id="pwd" 
+               name="pwd" 
+               placeholder="Password"
+               [(ngModel)]="selectedPassword"
+               required>
+      </div>
+    </div>
+  
+    <div class="form-group full-width">
+      <label for="email">Email</label>
+      <input type="email" 
+             id="email" 
+             name="email" 
+             placeholder="Email"
+             [(ngModel)]="selectedEmail"
+             required>
+    </div>
+  
+    <div class="form-group full-width">
+      <label for="address">Address</label>
+      <input type="text" 
+             id="address" 
+             name="address"
+             placeholder="Address"
+             [(ngModel)]="selectedAddress" 
+             required>
+    </div>
+  
+    <!-- Location Section -->
+    <div class="form-row">
+      <div class="form-group">
+        <label for="city">City</label>
+        <input type="text" 
+               id="city" 
+               name="city" 
+               placeholder="City"
+               [(ngModel)]="selectedCity"
+               required>
+      </div>
+      
+      <div class="form-group">
+        <label for="country">Country</label>
+        <select id="country" 
+            name="countryName" 
+            [(ngModel)]="selectedCountry" 
+            (ngModelChange)="onCountrySelect($event)">
+          <option *ngFor="let c of countries" value="{{c}}">{{ c }}</option>
+        </select>
+        </div> 
+        
+        <div class="form-group">
+        <label for="state">State</label>
+        <select id="states" 
+                name="states" 
+                [(ngModel)]="selectedState">
+            <option *ngFor = "let s of filteredStates" value="{{ s }}">{{s}}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label for="zip">ZIP Code</label>
+            <input type="text" 
+                   id="zip" 
+                   name="zip" 
+                   placeholder="Zip"
+                   [(ngModel)]="selectedZip"
+                   required>
+          </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="phone">Phone</label>
+            <input type="text" 
+                   id="phone" 
+                   name="phone" 
+                   placeholder="Phone"
+                   [(ngModel)]="selectedPhone"
+                   required>
+          </div>
+    </div>
+
+    <!-- <div class="form-group">
+        <label for="markets" >Markets</label>
+        <div class="datalist-wrapper">
+        <select id="market" 
+                list="marketList"
+                name="market" 
+                class="form-control" 
+                [(ngModel)]="selectedMarket">
+            <datalist id="marketList">
+              <option *ngFor=" let market of market" [value]="market">{{ market }}</option>
+            </datalist>
+        </select>
+      </div>
+    </div> -->
+    
+    <form (ngSubmit)="submitForm()" class="add-driver-form">
+    
+      <!-- DRIVER INFO -->
+      <!-- ... your existing driver fields (First name, Last name, Email, etc.) ... -->
+    
+      <!-- ============================= -->
+      <!-- OPERATOR SECTION -->
+      <!-- ============================= -->
+    
+      <div class="form-check mb-3">
+        <input 
+          class="form-check-input" 
+          type="checkbox" 
+          id="createOperatorToggle"
+          [(ngModel)]="creatingNewOperator" 
+          name="createOperatorToggle"
+        >
+        <label class="form-check-label" for="createOperatorToggle">
+          Create New Operator
+        </label>
+      </div>
+
+      <div *ngIf="creatingNewOperator">
+        <div class="form-group">
+          <label for="operatorName">Operator Name</label>
+          <input
+            type="text"
+            id="operatorName"
+            name="operatorName"
+            class="form-control"
+            [(ngModel)]="newOperatorName"
+            required
+          />
+        </div>
+      
+        <div class="form-group">
+          <label for="operatorType">Operator Type</label>
+          <select
+            id="operatorType"
+            name="operatorType"
+            class="form-select"
+            [(ngModel)]="newOperatorType"
+            required
+          >
+            <option value="ITO">ITO (Individual Truck Operator)</option>
+            <option value="MTO">MTO (Multiple Truck Operator)</option>
+          </select>
+        </div>
+      </div>
+      
+    
+      <div *ngIf="!creatingNewOperator">
+        <div class="form-group">
+          <label for="operatorSelect">Select Operator</label>
+          <select id="operatorSelect" name="operatorSelect" class="form-select"
+                  [(ngModel)]="selectedOperatorId" required>
+            <option [value]="''" disabled selected>Select an operator</option>
+            <option *ngFor="let operator of operatorList" [value]="operator.id">
+              {{ operator.name }} ({{ operator.operator_type }})
+            </option>
+          </select>
+        </div>
+      </div>
+    
+    
+      <!-- ============================= -->
+      <!-- TRUCK SECTION -->
+      <!-- ============================= -->
+    
+      <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" id="createTruckToggle"
+               [(ngModel)]="creatingNewTruck" name="createTruckToggle">
+        <label class="form-check-label" for="createTruckToggle">
+          Create New Truck
+        </label>
+      </div>
+      
+      
+    
+      <div *ngIf="creatingNewTruck">
+        <div class="form-group">
+          <label for="truckType">Truck Type</label>
+          <input type="text" id="truckType" [(ngModel)]="newTruckData.truck_type" name="truckType" class="form-control" />
+        </div>
+    
+        <div class="form-group">
+          <label for="carrier">Carrier</label>
+          <input type="text" id="carrier" [(ngModel)]="newTruckData.carrier" name="carrier" class="form-control" />
+        </div>
+    
+        <div class="form-group">
+          <label for="truckNumber">Truck Number</label>
+          <input type="text" id="truckNumber" [(ngModel)]="newTruckData.truck_number" name="truckNumber" class="form-control" />
+        </div>
+    
+        <div class="form-group">
+          <label for="licensePlate">License Plate</label>
+          <input type="text" id="licensePlate" [(ngModel)]="newTruckData.license_plate" name="licensePlate" class="form-control" />
+        </div>
+    
+        <div class="form-group">
+          <label for="market">Market</label>
+          <input type="text" id="market" [(ngModel)]="newTruckData.market" name="market" class="form-control" />
+        </div>
+      </div>
+    
+      <div *ngIf="!creatingNewTruck">
+        <div class="form-group">
+          <label for="truckSelect">Select Existing Truck</label>
+          <select id="truckSelect" name="truckSelect" class="form-select"
+        [(ngModel)]="selectedTruckId" required>
+          <option [value]="''" disabled selected>Select a truck</option>
+          <option *ngFor="let truck of availableTrucks" [value]="truck.id">
+            {{ truck.truck_number }} - {{ truck.truck_type }}
+          </option>
+        </select>
+
+        </div>
+      </div>
+    
+      <!-- SUBMIT -->
+      <div class="form-actions mt-4">
+        <button type="submit" class="btn btn-primary">Add Driver</button>
+      </div>
+    </form>
+    
+  
+    

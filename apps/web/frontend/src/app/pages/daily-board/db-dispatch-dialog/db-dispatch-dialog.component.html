@@ -1,0 +1,45 @@
+<div class="dialog-header">
+  <h2>Add Assignment</h2>
+  <button class="close-btn" (click)="closeDialog()">&times;</button>
+</div>
+
+<form (ngSubmit)="submitForm()" class="dispatch-form">
+  <!-- Job info -->
+  <div class="form-group job-info">
+    {{ selectedJob.project }} ({{ selectedJob.job_number }})
+  </div>
+
+  <!-- Driver dropdown (drivers-with-trucks) -->
+  <div class="form-group">
+    <label for="dta">Driver:</label>
+    <select id="dta" class="form-control"
+            [(ngModel)]="chosenDTAId" name="chosenDTAId" required>
+      <option [ngValue]="null" disabled>– select driver –</option>
+      <option 
+        *ngFor="let dta of driverTruckAssignments" 
+        [ngValue]="dta.id"
+      >
+        {{ dta.driver }} ({{ dta.truck_type }})
+      </option>
+    </select>
+  </div>
+
+  <!-- Non-editable Truck display -->
+  <div class="form-group">
+    <label>Truck:</label>
+    <input class="form-control" [value]="selectedTruckNumber" disabled />
+  </div>
+
+  <!-- Time picker -->
+  <div class="form-group">
+    <label>Time / Date:</label>
+    <div class="time-date-wrapper">
+      <span class="job-date">{{ getJobDate() }}</span>
+      <input type="time" class="form-control" [(ngModel)]="chosenTime" name="chosenTime" required>
+    </div>
+  </div>
+
+  <button type="submit" class="btn btn-primary" [disabled]="!chosenDTAId || !chosenTime">
+    Dispatch
+  </button>
+</form>

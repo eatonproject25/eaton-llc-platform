@@ -1,0 +1,83 @@
+<!-- Backdrop -->
+<div class="modal-backdrop" (click)="cancel.emit()"></div>
+
+<!-- Modal -->
+<div class="modal-card" role="dialog" aria-modal="true" aria-label="Create Invoice">
+  <!-- Blue Header -->
+  <div class="modal-header-blue">
+    <h5 class="modal-title">Create Invoice</h5>
+    <button type="button" class="btn-close-white" aria-label="Close" (click)="cancel.emit()">
+      <span class="close-x"></span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <!-- Customer -->
+    <div class="form-group">
+      <label class="form-label">Customer</label>
+      <div class="typeahead">
+        <input
+          class="form-control mb-2"
+          type="text"
+          placeholder="Type to filter customers…"
+          [(ngModel)]="customerQuery"
+        />
+        <select class="form-select" size="6"
+                [(ngModel)]="selectedCustomerId"
+                (change)="onCustomerChange()">
+          <option *ngFor="let c of filteredCustomers()" [ngValue]="c.id">
+            {{ c.name }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Job -->
+    <div class="form-group">
+      <label class="form-label">Job</label>
+      <div class="typeahead">
+        <input
+          class="form-control mb-2"
+          type="text"
+          placeholder="Type to filter jobs…"
+          [(ngModel)]="jobQuery"
+          [disabled]="!selectedCustomerId"
+        />
+        <select class="form-select" size="6"
+                [(ngModel)]="selectedJobId"
+                [disabled]="!selectedCustomerId">
+          <option *ngFor="let j of filteredJobs()" [ngValue]="j.id">
+            {{ j.jobNumber }} — {{ j.projectName }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Invoice Date Range (Week) -->
+    <div class="form-group">
+      <label class="form-label">Invoice Period (Week Range)</label>
+      <div class="row g-2">
+        <div class="col-md-6">
+          <label class="form-label small">Start Date</label>
+          <input class="form-control"
+                 type="date"
+                 [(ngModel)]="startDate"
+                 (ngModelChange)="onStartDateChange()" />
+        </div>
+        <div class="col-md-6">
+          <label class="form-label small">End Date</label>
+          <input class="form-control"
+                 type="date"
+                 [(ngModel)]="endDate" />
+        </div>
+      </div>
+      <small class="text-muted">End date is automatically set to 7 days from start date</small>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn btn-primary btn-full-width" [disabled]="!canSave()" (click)="doSave()">
+      Create Invoice
+    </button>
+  </div>
+</div>
